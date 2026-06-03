@@ -1,7 +1,7 @@
 # ⚔️ 이세계 용사 마켓 (Isekai Hero Market)
 
 > **"당신의 모험을 완성할 최강의 장비, 여기서 거래하세요."**  
-> 이세계 아포칼립스 세계관을 배경으로 한 아이템 거래 웹 서비스입니다.
+> 이세계 세계관을 배경으로 한 아이템 거래 웹 서비스입니다.
 
 [![Python](https://img.shields.io/badge/Python-3.x-blue?style=flat-square&logo=python)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-Framework-lightgrey?style=flat-square&logo=flask)](https://flask.palletsprojects.com/)
@@ -20,7 +20,7 @@
 ### 1. 맞춤형 거래 시스템 (CRUD)
 - **아이템 등록:** 상세 설명, 카테고리(무기/방어구/포션 등), 가격 설정
 - **동적 검색:** 제목, 설명, 판매자 닉네임을 아우르는 통합 검색 시스템
-- **조회수 및 상태 관리:** 실시간 인기 템 확인 및 판매완료 처리 기능
+- **조회수 및 상태 관리:** 실시간 인기 있는 물건 확인 및 판매완료 처리 기능
 
 ### 2. 보안 및 권한 관리
 - **세션 기반 로그인:** 사용자별 고유 닉네임을 활용한 판매자 인증
