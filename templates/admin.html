@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}관리자 페이지 - 이세계 용사 마켓{% endblock %}
+{% block content %}
+
+<div class="stat-bar">
+  <span>전체 아이템: <b>{{ total_items }}</b>개</span>
+  <span>판매 중: <b>{{ on_sale }}</b>개</span>
+  <span>가입 회원: <b>{{ total_users }}</b>명</span>
+</div>
+
+<!-- 아이템 관리 -->
+<div class="admin-section-title">⚙️ 전체 아이템 관리 ({{ total_items }}개)</div>
+<div class="board-wrap" style="margin-bottom:16px;">
+  <table class="item-table">
+    <thead>
+      <tr>
+        <th class="col-no">번호</th>
+        <th class="col-cat">분류</th>
+        <th class="col-title">상품명</th>
+        <th class="col-price">가격</th>
+        <th class="col-seller">판매자</th>
+        <th class="col-cat">상태</th>
+        <th class="col-date">등록일</th>
+        <th style="width:90px;">관리</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td class="col-no">{{ item['id'] }}</td>
+        <td class="col-cat">
+          {% set cat = item['category'] %}
+          {% if cat == '무기' %}<span class="badge badge-weapon">⚔️</span>
+          {% elif cat == '방어구' %}<span class="badge badge-armor">🛡️</span>
+          {% elif cat == '포션' %}<span class="badge badge-potion">🧪</span>
+          {% elif cat == '마법서' %}<span class="badge badge-magic">📖</span>
+          {% else %}<span class="badge badge-etc">📦</span>{% endif %}
+          {{ cat }}
+        </td>
+        <td><a href="/detail/{{ item['id'] }}/">{{ item['title'] }}</a></td>
+        <td class="col-price">{{ "{:,}".format(item['price']) }} G</td>
+        <td class="col-seller">{{ item['seller'] }}</td>
+        <td class="col-cat">
+          {% if item['status'] == '판매중' %}
+            <span class="badge badge-onsale">판매중</span>
+          {% else %}
+            <span class="badge badge-sold">완료</span>
+          {% endif %}
+        </td>
+        <td class="col-date">{{ item['date'] }}</td>
+        <td style="text-align:center;">
+          <a href="/update/{{ item['id'] }}/" class="btn btn-orange" style="padding:2px 7px;font-size:11px;">수정</a>
+          <a href="/delete/{{ item['id'] }}/"
+             onclick="return confirm('[{{ item['title'] }}] 삭제하시겠습니까?')"
+             class="btn btn-red" style="padding:2px 7px;font-size:11px;">삭제</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if not items %}
+  <div style="padding:20px;text-align:center;color:#888;font-size:13px;">등록된 아이템이 없습니다.</div>
+  {% endif %}
+</div>
+
+<!-- 회원 관리 -->
+<div class="admin-section-title">👤 회원 관리 ({{ total_users }}명)</div>
+<div class="board-wrap">
+  <table class="item-table">
+    <thead>
+      <tr>
+        <th class="col-no">번호</th>
+        <th>아이디</th>
+        <th>닉네임</th>
+        <th class="col-date">가입일</th>
+        <th style="width:70px;">관리</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <td class="col-no">{{ user['id'] }}</td>
+        <td>{{ user['username'] }}</td>
+        <td>{{ user['nickname'] }}</td>
+        <td class="col-date">{{ user['date'] }}</td>
+        <td style="text-align:center;">
+          <a href="/admin/delete_user/{{ user['id'] }}/"
+             onclick="return confirm('[{{ user['nickname'] }}] 회원을 삭제하시겠습니까?')"
+             class="btn btn-red" style="padding:2px 7px;font-size:11px;">삭제</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if not users %}
+  <div style="padding:20px;text-align:center;color:#888;font-size:13px;">가입된 회원이 없습니다.</div>
+  {% endif %}
+</div>
+
+{% endblock %}

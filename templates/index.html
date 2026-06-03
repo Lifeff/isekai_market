@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}전체 거래소 - 이세계 용사 마켓{% endblock %}
+{% block content %}
+
+<div class="stat-bar">
+  <span>전체 등록 아이템: <b>{{ total }}</b>개</span>
+  <span>판매 중: <b>{{ on_sale }}</b>개</span>
+  {% if keyword %}<span>검색어: <b>{{ keyword }}</b></span>{% endif %}
+  {% if category %}<span>카테고리 필터: <b>{{ category }}</b></span>{% endif %}
+</div>
+
+<div class="board-wrap">
+  <div class="board-title-bar">
+    <span>
+      {% if category %}{{ category }} 아이템 목록{% else %}전체 아이템 목록{% endif %}
+    </span>
+    <span class="subtitle">총 {{ items|length }}건</span>
+  </div>
+
+  {% if items %}
+  <table class="item-table">
+    <thead>
+      <tr>
+        <th class="col-no">번호</th>
+        <th class="col-cat">분류</th>
+        <th class="col-title">상품명</th>
+        <th class="col-price">가격(골드)</th>
+        <th class="col-seller">판매자</th>
+        <th class="col-views">조회</th>
+        <th class="col-date">등록일</th>
+        <th class="col-cat">상태</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td class="col-no">{{ item['id'] }}</td>
+        <td class="col-cat">
+          {% set cat = item['category'] %}
+          {% if cat == '무기' %}<span class="badge badge-weapon">⚔️ 무기</span>
+          {% elif cat == '방어구' %}<span class="badge badge-armor">🛡️ 방어구</span>
+          {% elif cat == '포션' %}<span class="badge badge-potion">🧪 포션</span>
+          {% elif cat == '마법서' %}<span class="badge badge-magic">📖 마법서</span>
+          {% else %}<span class="badge badge-etc">📦 기타</span>{% endif %}
+        </td>
+        <td class="col-title">
+          <a href="/detail/{{ item['id'] }}/">{{ item['title'] }}</a>
+          {% if item['status'] == '판매완료' %}<span style="color:#999;font-size:11px;"> [판매완료]</span>{% endif %}
+        </td>
+        <td class="col-price">{{ "{:,}".format(item['price']) }} G</td>
+        <td class="col-seller">{{ item['seller'] }}</td>
+        <td class="col-views">{{ item['views'] }}</td>
+        <td class="col-date">{{ item['date'] }}</td>
+        <td class="col-cat">
+          {% if item['status'] == '판매중' %}
+            <span class="badge badge-onsale">판매중</span>
+          {% else %}
+            <span class="badge badge-sold">완료</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div style="padding:30px;text-align:center;color:#888;font-size:13px;">
+    {% if keyword %}
+      <p>🔍 "<b>{{ keyword }}</b>" 검색 결과가 없습니다.</p>
+      <p style="margin-top:8px;"><a href="/" class="btn btn-gray">전체 목록 보기</a></p>
+    {% else %}
+      <p>등록된 아이템이 없습니다. 첫 번째 아이템을 등록해보세요!</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="board-bottom">
+    <div class="total-info">
+      총 <b>{{ items|length }}</b>개의 아이템
+    </div>
+    <div>
+      {% if session.get('user') %}
+        <a href="/create/" class="btn btn-blue">✍️ 상품 등록</a>
+      {% else %}
+        <a href="/login/" class="btn btn-blue">로그인 후 등록</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

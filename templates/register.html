@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}회원가입 - 이세계 용사 마켓{% endblock %}
+{% block content %}
+
+<div class="login-wrap">
+  <div class="board-wrap">
+    <div class="board-title-bar">
+      <span>⚔️ 용사 등록 (회원가입)</span>
+    </div>
+
+    {% if error %}
+    <div class="form-error">⚠️ {{ error }}</div>
+    {% endif %}
+
+    <form method="post" id="regForm">
+      <div class="form-wrap">
+        <div class="form-row">
+          <label>아이디 *</label>
+          <input type="text" name="username" id="username" placeholder="로그인에 사용할 아이디">
+        </div>
+        <div class="form-row">
+          <label>비밀번호 *</label>
+          <input type="password" name="password" id="password" placeholder="비밀번호">
+        </div>
+        <div class="form-row">
+          <label>닉네임 *</label>
+          <input type="text" name="nickname" id="nickname" placeholder="게시판에 표시될 이름 (예: 검성_이카루스)">
+        </div>
+        <div style="font-size:11px;color:#668;padding:4px 0 8px 80px;">
+          ※ 닉네임은 판매자명으로 표시됩니다.
+        </div>
+      </div>
+      <div class="board-bottom" style="justify-content:center;gap:8px;">
+        <button type="button" class="btn btn-blue" style="padding:5px 24px;"
+          onclick="
+            var u=document.getElementById('username').value.trim();
+            var p=document.getElementById('password').value;
+            var n=document.getElementById('nickname').value.trim();
+            if(!u||!p||!n){ alert('모든 항목을 입력해주세요.'); return; }
+            document.getElementById('regForm').submit();
+          ">가입하기</button>
+        <a href="/login/" class="btn btn-gray">로그인</a>
+        <a href="/" class="btn btn-gray">취소</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

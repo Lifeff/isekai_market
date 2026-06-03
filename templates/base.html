@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}이세계 용사 마켓{% endblock %}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Malgun Gothic', '맑은 고딕', Dotum, '돋움', sans-serif;
+      font-size: 13px;
+      background: #e8edf5;
+      color: #222;
+    }
+
+    /* ─── 헤더 ─── */
+    #header {
+      background: #1a4a8a;
+      border-bottom: 3px solid #f5a623;
+      padding: 0;
+    }
+    #header-top {
+      background: #0d2f5e;
+      padding: 4px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #aac4e8;
+    }
+    #header-top a { color: #aac4e8; text-decoration: none; }
+    #header-top a:hover { color: #fff; text-decoration: underline; }
+    #header-top .sep { margin: 0 5px; color: #4a6a99; }
+
+    #header-main {
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      gap: 20px;
+    }
+    #logo {
+      font-size: 22px;
+      font-weight: bold;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: -0.5px;
+      white-space: nowrap;
+    }
+    #logo span { color: #f5a623; }
+
+    #search-bar {
+      display: flex;
+      flex: 1;
+      max-width: 500px;
+    }
+    #search-bar select {
+      border: 1px solid #4a6a99;
+      background: #0d2f5e;
+      color: #cde;
+      padding: 4px 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    #search-bar input {
+      flex: 1;
+      border: 1px solid #4a6a99;
+      border-left: none;
+      padding: 4px 8px;
+      font-size: 12px;
+      background: #fff;
+    }
+    #search-bar button {
+      background: #2468c0;
+      color: #fff;
+      border: none;
+      padding: 4px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    #search-bar button:hover { background: #1a50a0; }
+
+    /* ─── 네비 탭 ─── */
+    #nav {
+      background: #1a4a8a;
+      padding: 0 10px;
+      display: flex;
+      gap: 2px;
+      border-top: 1px solid #2468c0;
+    }
+    #nav a {
+      display: inline-block;
+      padding: 6px 14px;
+      color: #cde;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    #nav a:hover, #nav a.active {
+      background: #fff;
+      color: #1a4a8a;
+    }
+
+    /* ─── 레이아웃 ─── */
+    #wrap {
+      max-width: 1000px;
+      margin: 10px auto;
+      padding: 0 6px;
+      display: flex;
+      gap: 8px;
+    }
+
+    #sidebar {
+      width: 150px;
+      flex-shrink: 0;
+    }
+    .side-box {
+      background: #fff;
+      border: 1px solid #b0c4de;
+      margin-bottom: 8px;
+    }
+    .side-box-title {
+      background: #2468c0;
+      color: #fff;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 5px 8px;
+    }
+    .side-box ul { list-style: none; }
+    .side-box ul li a {
+      display: block;
+      padding: 4px 8px;
+      color: #224;
+      text-decoration: none;
+      font-size: 12px;
+      border-bottom: 1px dotted #d0d8e8;
+    }
+    .side-box ul li a:hover { background: #e8f0fa; color: #1a4a8a; }
+    .side-box ul li a.active { color: #cc3300; font-weight: bold; }
+
+    #content { flex: 1; min-width: 0; }
+
+    /* ─── 게시판 공통 박스 ─── */
+    .board-wrap {
+      background: #fff;
+      border: 1px solid #b0c4de;
+    }
+    .board-title-bar {
+      background: #2468c0;
+      color: #fff;
+      font-size: 14px;
+      font-weight: bold;
+      padding: 7px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .board-title-bar .subtitle {
+      font-size: 11px;
+      font-weight: normal;
+      color: #aac4f0;
+    }
+
+    /* ─── 상품 목록 테이블 ─── */
+    .item-table { width: 100%; border-collapse: collapse; }
+    .item-table thead tr { background: #dce8f8; }
+    .item-table thead th {
+      padding: 5px 8px;
+      border-bottom: 1px solid #b0c4de;
+      border-right: 1px solid #d0d8ee;
+      font-size: 11px;
+      color: #336;
+      text-align: center;
+    }
+    .item-table tbody tr { border-bottom: 1px solid #e8edf5; }
+    .item-table tbody tr:hover { background: #f0f5fc; }
+    .item-table tbody td {
+      padding: 6px 8px;
+      font-size: 12px;
+      border-right: 1px solid #eef0f8;
+    }
+    .item-table tbody td a {
+      color: #1a1a66;
+      text-decoration: none;
+    }
+    .item-table tbody td a:hover { text-decoration: underline; color: #cc0000; }
+    .item-table .col-no { width: 40px; text-align: center; color: #888; }
+    .item-table .col-cat { width: 70px; text-align: center; }
+    .item-table .col-title { }
+    .item-table .col-price { width: 80px; text-align: right; color: #cc3300; font-weight: bold; }
+    .item-table .col-seller { width: 70px; text-align: center; color: #557; }
+    .item-table .col-views { width: 45px; text-align: center; color: #888; }
+    .item-table .col-date { width: 80px; text-align: center; color: #888; }
+
+    .badge {
+      display: inline-block;
+      padding: 1px 5px;
+      font-size: 10px;
+      border-radius: 2px;
+      font-weight: bold;
+    }
+    .badge-weapon   { background: #fff0e0; color: #cc6600; border: 1px solid #e8b060; }
+    .badge-armor    { background: #e8f0ff; color: #1a4a9a; border: 1px solid #8aacee; }
+    .badge-potion   { background: #f0ffe8; color: #338800; border: 1px solid #88cc44; }
+    .badge-magic    { background: #f5e8ff; color: #660099; border: 1px solid #cc88ee; }
+    .badge-etc      { background: #f0f0f0; color: #555; border: 1px solid #ccc; }
+    .badge-sold     { background: #eee; color: #999; border: 1px solid #ccc; }
+    .badge-onsale   { background: #e8f8e8; color: #006600; border: 1px solid #66cc66; }
+
+    /* ─── 하단 버튼/페이지 영역 ─── */
+    .board-bottom {
+      padding: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #e0e8f4;
+      background: #f5f8ff;
+    }
+    .board-bottom .total-info { font-size: 11px; color: #667; }
+
+    /* ─── 버튼 ─── */
+    .btn {
+      display: inline-block;
+      padding: 4px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      border: 1px solid;
+      font-family: inherit;
+    }
+    .btn-blue {
+      background: #2468c0;
+      border-color: #1a50a0;
+      color: #fff;
+    }
+    .btn-blue:hover { background: #1a50a0; }
+    .btn-gray {
+      background: #e8e8e8;
+      border-color: #bbb;
+      color: #444;
+    }
+    .btn-gray:hover { background: #d8d8d8; }
+    .btn-red {
+      background: #cc2200;
+      border-color: #aa1100;
+      color: #fff;
+    }
+    .btn-red:hover { background: #aa1100; }
+    .btn-orange {
+      background: #e87820;
+      border-color: #c06010;
+      color: #fff;
+    }
+    .btn-orange:hover { background: #c06010; }
+
+    /* ─── 상세 뷰 ─── */
+    .detail-header {
+      padding: 10px 12px;
+      border-bottom: 1px solid #d0d8ee;
+      background: #f5f8ff;
+    }
+    .detail-header h2 {
+      font-size: 16px;
+      color: #112266;
+      margin-bottom: 4px;
+    }
+    .detail-meta { font-size: 11px; color: #778; }
+    .detail-meta span { margin-right: 12px; }
+    .detail-body { padding: 14px 12px; min-height: 150px; line-height: 1.8; font-size: 13px; }
+    .detail-price-box {
+      background: #fffbe8;
+      border: 1px solid #e8d080;
+      margin: 10px 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .detail-price-box .price-label { font-size: 12px; color: #886600; }
+    .detail-price-box .price-value { font-size: 22px; font-weight: bold; color: #cc3300; }
+
+    /* ─── 폼 ─── */
+    .form-wrap { padding: 14px; }
+    .form-row { margin-bottom: 10px; display: flex; align-items: center; }
+    .form-row label {
+      width: 80px;
+      font-size: 12px;
+      font-weight: bold;
+      color: #335;
+      flex-shrink: 0;
+    }
+    .form-row input[type=text],
+    .form-row input[type=number],
+    .form-row input[type=password],
+    .form-row select,
+    .form-row textarea {
+      flex: 1;
+      border: 1px solid #b0c4de;
+      padding: 5px 8px;
+      font-size: 12px;
+      font-family: inherit;
+    }
+    .form-row textarea { height: 140px; resize: vertical; }
+    .form-row input:focus,
+    .form-row select:focus,
+    .form-row textarea:focus {
+      outline: none;
+      border-color: #2468c0;
+      background: #f0f5ff;
+    }
+    .form-error { color: #cc0000; font-size: 12px; padding: 6px 14px; background: #fff0f0; border-bottom: 1px solid #ffbbbb; }
+
+    /* ─── 공지/통계 박스 ─── */
+    .stat-bar {
+      background: #e8f0fa;
+      border: 1px solid #b0c4de;
+      padding: 6px 10px;
+      font-size: 11px;
+      color: #446;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 16px;
+    }
+    .stat-bar span b { color: #cc3300; }
+
+    /* ─── 관리자 ─── */
+    .admin-section-title {
+      background: #dce8f8;
+      border: 1px solid #b0c4de;
+      border-bottom: none;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: bold;
+      color: #224;
+    }
+
+    /* ─── 푸터 ─── */
+    #footer {
+      text-align: center;
+      padding: 16px;
+      font-size: 11px;
+      color: #889;
+      margin-top: 10px;
+      border-top: 1px solid #c8d4e8;
+    }
+
+    /* ─── 로그인/회원가입 중앙 박스 ─── */
+    .login-wrap {
+      max-width: 400px;
+      margin: 40px auto;
+    }
+  </style>
+</head>
+<body>
+
+<div id="header">
+  <div id="header-top">
+    <div>
+      <a href="/">이세계 용사 마켓</a>
+      <span class="sep">|</span>
+      아포칼립스 시대의 최대 아이템 거래소
+    </div>
+    <div>
+      {% if session.get('user') %}
+        <b style="color:#fff;">{{ session['user'] }}</b> 님
+        <span class="sep">|</span>
+        {% if session.get('is_admin') %}<a href="/admin/">관리자</a><span class="sep">|</span>{% endif %}
+        <a href="/logout/">로그아웃</a>
+      {% else %}
+        <a href="/login/">로그인</a>
+        <span class="sep">|</span>
+        <a href="/register/">회원가입</a>
+      {% endif %}
+    </div>
+  </div>
+  <div id="header-main">
+    <a href="/" id="logo">⚔️ 이세계<span>용사마켓</span></a>
+    <form id="search-bar" action="/" method="get">
+      <select name="category">
+        <option value="">전체 카테고리</option>
+        <option value="무기" {% if request.args.get('category')=='무기' %}selected{% endif %}>⚔️ 무기</option>
+        <option value="방어구" {% if request.args.get('category')=='방어구' %}selected{% endif %}>🛡️ 방어구</option>
+        <option value="포션" {% if request.args.get('category')=='포션' %}selected{% endif %}>🧪 포션</option>
+        <option value="마법서" {% if request.args.get('category')=='마법서' %}selected{% endif %}>📖 마법서</option>
+        <option value="기타" {% if request.args.get('category')=='기타' %}selected{% endif %}>📦 기타</option>
+      </select>
+      <input type="text" name="keyword" value="{{ request.args.get('keyword','') }}" placeholder="아이템명, 설명, 판매자 검색">
+      <button type="submit">🔍 검색</button>
+    </form>
+  </div>
+  <div id="nav">
+    <a href="/" class="{{ 'active' if request.endpoint=='index' else '' }}">🏠 전체 거래소</a>
+    <a href="/?category=무기">⚔️ 무기</a>
+    <a href="/?category=방어구">🛡️ 방어구</a>
+    <a href="/?category=포션">🧪 포션</a>
+    <a href="/?category=마법서">📖 마법서</a>
+    <a href="/?category=기타">📦 기타</a>
+    {% if session.get('user') %}<a href="/create/">✍️ 상품 등록</a>{% endif %}
+    {% if session.get('is_admin') %}<a href="/admin/">⚙️ 관리자</a>{% endif %}
+  </div>
+</div>
+
+<div id="wrap">
+  <div id="sidebar">
+    <div class="side-box">
+      <div class="side-box-title">📂 카테고리</div>
+      <ul>
+        <li><a href="/" class="{{ 'active' if not request.args.get('category') else '' }}">전체 아이템</a></li>
+        <li><a href="/?category=무기" class="{{ 'active' if request.args.get('category')=='무기' else '' }}">⚔️ 무기류</a></li>
+        <li><a href="/?category=방어구" class="{{ 'active' if request.args.get('category')=='방어구' else '' }}">🛡️ 방어구류</a></li>
+        <li><a href="/?category=포션" class="{{ 'active' if request.args.get('category')=='포션' else '' }}">🧪 포션류</a></li>
+        <li><a href="/?category=마법서" class="{{ 'active' if request.args.get('category')=='마법서' else '' }}">📖 마법서류</a></li>
+        <li><a href="/?category=기타" class="{{ 'active' if request.args.get('category')=='기타' else '' }}">📦 기타</a></li>
+      </ul>
+    </div>
+    <div class="side-box">
+      <div class="side-box-title">🔖 이용 안내</div>
+      <ul>
+        <li><a href="/register/">회원가입</a></li>
+        <li><a href="/login/">로그인</a></li>
+        {% if session.get('user') %}<li><a href="/create/">상품 등록</a></li>{% endif %}
+      </ul>
+    </div>
+    <div class="side-box" style="padding:8px;font-size:11px;color:#446;line-height:1.6;">
+      <div class="side-box-title">⚠️ 거래 주의사항</div>
+      <div style="padding:6px 8px;">
+        ・저주 아이템 등록 금지<br>
+        ・허위 강화 수치 금지<br>
+        ・사기 적발 시 계정 봉인<br>
+        ・모든 거래는 자기 책임
+      </div>
+    </div>
+  </div>
+
+  <div id="content">
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+<div id="footer">
+  이세계 용사 마켓 &copy; 2024 | 아포칼립스 이후 최대 아이템 거래소 | 운영: 대마왕 토벌 용사 조합
+</div>
+
+</body>
+</html>

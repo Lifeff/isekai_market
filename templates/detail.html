@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ item['title'] }} - 이세계 용사 마켓{% endblock %}
+{% block content %}
+
+<div class="board-wrap">
+  <div class="board-title-bar">
+    <span>상품 상세보기</span>
+  </div>
+
+  <div class="detail-header">
+    <h2>{{ item['title'] }}</h2>
+    <div class="detail-meta">
+      <span>
+        {% set cat = item['category'] %}
+        {% if cat == '무기' %}<span class="badge badge-weapon">⚔️ 무기</span>
+        {% elif cat == '방어구' %}<span class="badge badge-armor">🛡️ 방어구</span>
+        {% elif cat == '포션' %}<span class="badge badge-potion">🧪 포션</span>
+        {% elif cat == '마법서' %}<span class="badge badge-magic">📖 마법서</span>
+        {% else %}<span class="badge badge-etc">📦 기타</span>{% endif %}
+      </span>
+      <span>판매자: <b>{{ item['seller'] }}</b></span>
+      <span>등록일: {{ item['date'] }}</span>
+      <span>조회수: {{ item['views'] }}</span>
+      <span>
+        {% if item['status'] == '판매중' %}
+          <span class="badge badge-onsale">판매중</span>
+        {% else %}
+          <span class="badge badge-sold">판매완료</span>
+        {% endif %}
+      </span>
+    </div>
+  </div>
+
+  <div class="detail-price-box">
+    <div class="price-label">💰 판매 가격</div>
+    <div class="price-value">{{ "{:,}".format(item['price']) }} 골드 (G)</div>
+  </div>
+
+  <div class="detail-body">
+    {{ item['description'] }}
+  </div>
+
+  <div class="board-bottom">
+    <a href="/" class="btn btn-gray">← 목록으로</a>
+    <div style="display:flex;gap:6px;">
+      {% if is_admin or user == item['seller'] %}
+        <a href="/update/{{ item['id'] }}/" class="btn btn-orange">✏️ 수정</a>
+        <a href="/delete/{{ item['id'] }}/"
+           onclick="return confirm('정말 삭제하시겠습니까?\n[{{ item['title'] }}]')"
+           class="btn btn-red">🗑️ 삭제</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

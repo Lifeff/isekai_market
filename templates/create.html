@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}상품 등록 - 이세계 용사 마켓{% endblock %}
+{% block content %}
+
+<div class="board-wrap">
+  <div class="board-title-bar">
+    <span>✍️ 새 아이템 등록</span>
+  </div>
+
+  <form method="post" id="createForm">
+    <div class="form-wrap">
+      <div class="form-row">
+        <label>아이템명 *</label>
+        <input type="text" name="title" id="title" placeholder="예: 화염 검 +3, 마나 포션 (대) 10개">
+      </div>
+      <div class="form-row">
+        <label>카테고리 *</label>
+        <select name="category" id="category">
+          <option value="">-- 선택 --</option>
+          <option value="무기">⚔️ 무기</option>
+          <option value="방어구">🛡️ 방어구</option>
+          <option value="포션">🧪 포션</option>
+          <option value="마법서">📖 마법서</option>
+          <option value="기타">📦 기타</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>가격 (골드) *</label>
+        <input type="number" name="price" id="price" placeholder="예: 5000" min="0">
+      </div>
+      <div class="form-row">
+        <label>상품 설명 *</label>
+        <textarea name="description" id="description"
+          placeholder="아이템의 능력치, 상태, 거래 조건 등을 상세히 적어주세요.&#10;예) 드래곤 슬레이어 검 강화 +7. 공격력 +150, 용 특효 데미지 2배. 내구도 82/100. 직접 던전에서 획득."></textarea>
+      </div>
+      <div style="background:#e8f0fa;border:1px solid #b0c4de;padding:8px 12px;font-size:11px;color:#446;margin-bottom:10px;">
+        ⚠️ 저주 아이템, 허위 강화 수치 기재 시 계정이 영구 봉인됩니다. 정직한 거래를 해주세요.
+      </div>
+    </div>
+
+    <div class="board-bottom">
+      <a href="/" class="btn btn-gray">취소</a>
+      <button type="button" class="btn btn-blue" onclick="submitCheck()">✍️ 등록하기</button>
+    </div>
+  </form>
+</div>
+
+<script>
+function submitCheck() {
+  var title    = document.getElementById('title').value.trim();
+  var category = document.getElementById('category').value;
+  var price    = document.getElementById('price').value;
+  var desc     = document.getElementById('description').value.trim();
+  if (!title) { alert('아이템명을 입력해주세요.'); return; }
+  if (!category) { alert('카테고리를 선택해주세요.'); return; }
+  if (!price || price < 0) { alert('가격을 올바르게 입력해주세요.'); return; }
+  if (!desc) { alert('상품 설명을 입력해주세요.'); return; }
+  document.getElementById('createForm').submit();
+}
+</script>
+{% endblock %}

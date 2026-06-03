@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}로그인 - 이세계 용사 마켓{% endblock %}
+{% block content %}
+
+<div class="login-wrap">
+  <div class="board-wrap">
+    <div class="board-title-bar">
+      <span>🗝️ 용사 로그인</span>
+    </div>
+
+    {% if error %}
+    <div class="form-error">⚠️ {{ error }}</div>
+    {% endif %}
+
+    <form method="post" id="loginForm">
+      <div class="form-wrap">
+        <div class="form-row">
+          <label>아이디</label>
+          <input type="text" name="username" id="username" placeholder="아이디 입력">
+        </div>
+        <div class="form-row">
+          <label>비밀번호</label>
+          <input type="password" name="password" id="password" placeholder="비밀번호 입력">
+        </div>
+      </div>
+      <div class="board-bottom" style="justify-content:center;gap:8px;">
+        <button type="button" class="btn btn-blue" style="padding:5px 30px;"
+          onclick="
+            if(!document.getElementById('username').value||!document.getElementById('password').value){
+              alert('아이디와 비밀번호를 모두 입력해주세요.');
+            } else {
+              document.getElementById('loginForm').submit();
+            }
+          ">로그인</button>
+        <a href="/register/" class="btn btn-gray">회원가입</a>
+        <a href="/" class="btn btn-gray">취소</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

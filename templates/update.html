@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}상품 수정 - 이세계 용사 마켓{% endblock %}
+{% block content %}
+
+<div class="board-wrap">
+  <div class="board-title-bar">
+    <span>✏️ 상품 수정</span>
+  </div>
+
+  <form method="post" id="updateForm">
+    <div class="form-wrap">
+      <div class="form-row">
+        <label>아이템명 *</label>
+        <input type="text" name="title" id="title" value="{{ item['title'] }}">
+      </div>
+      <div class="form-row">
+        <label>카테고리 *</label>
+        <select name="category" id="category">
+          <option value="무기"   {% if item['category']=='무기' %}selected{% endif %}>⚔️ 무기</option>
+          <option value="방어구" {% if item['category']=='방어구' %}selected{% endif %}>🛡️ 방어구</option>
+          <option value="포션"   {% if item['category']=='포션' %}selected{% endif %}>🧪 포션</option>
+          <option value="마법서" {% if item['category']=='마법서' %}selected{% endif %}>📖 마법서</option>
+          <option value="기타"   {% if item['category']=='기타' %}selected{% endif %}>📦 기타</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>가격 (골드) *</label>
+        <input type="number" name="price" id="price" value="{{ item['price'] }}" min="0">
+      </div>
+      <div class="form-row">
+        <label>판매 상태</label>
+        <select name="status">
+          <option value="판매중"   {% if item['status']=='판매중' %}selected{% endif %}>판매중</option>
+          <option value="판매완료" {% if item['status']=='판매완료' %}selected{% endif %}>판매완료</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>상품 설명 *</label>
+        <textarea name="description" id="description">{{ item['description'] }}</textarea>
+      </div>
+    </div>
+
+    <div class="board-bottom">
+      <a href="/detail/{{ item['id'] }}/" class="btn btn-gray">취소</a>
+      <button type="button" class="btn btn-orange" onclick="submitCheck()">💾 저장하기</button>
+    </div>
+  </form>
+</div>
+
+<script>
+function submitCheck() {
+  var title = document.getElementById('title').value.trim();
+  var desc  = document.getElementById('description').value.trim();
+  var price = document.getElementById('price').value;
+  if (!title) { alert('아이템명을 입력해주세요.'); return; }
+  if (!price || price < 0) { alert('가격을 올바르게 입력해주세요.'); return; }
+  if (!desc) { alert('상품 설명을 입력해주세요.'); return; }
+  document.getElementById('updateForm').submit();
+}
+</script>
+{% endblock %}
