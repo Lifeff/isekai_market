@@ -7,7 +7,7 @@
     <span>✍️ 새 아이템 등록</span>
   </div>
 
-  <form method="post" id="createForm">
+  <form method="post" enctype="multipart/form-data" id="createForm">
     <div class="form-wrap">
       <div class="form-row">
         <label>아이템명 *</label>
@@ -29,6 +29,18 @@
         <input type="number" name="price" id="price" placeholder="예: 5000" min="0">
       </div>
       <div class="form-row">
+        <label>상품 사진</label>
+        <div style="flex:1;">
+          <input type="file" name="image" id="imageInput" accept=".jpg,.jpeg,.png,.gif,.webp"
+                 style="border:1px solid #b0c4de;padding:4px;font-size:12px;width:100%;"
+                 onchange="previewImage(this)">
+          <div style="font-size:11px;color:#778;margin-top:3px;">jpg, jpeg, png, gif, webp / 최대 5MB / 선택사항</div>
+          <div id="preview-wrap" style="display:none;margin-top:6px;">
+            <img id="preview-img" style="max-width:200px;max-height:200px;object-fit:contain;border:1px solid #c8d4e8;">
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
         <label>상품 설명 *</label>
         <textarea name="description" id="description"
           placeholder="아이템의 능력치, 상태, 거래 조건 등을 상세히 적어주세요.&#10;예) 드래곤 슬레이어 검 강화 +7. 공격력 +150, 용 특효 데미지 2배. 내구도 82/100. 직접 던전에서 획득."></textarea>
@@ -46,6 +58,27 @@
 </div>
 
 <script>
+function previewImage(input) {
+  var wrap = document.getElementById('preview-wrap');
+  var img  = document.getElementById('preview-img');
+  if (input.files && input.files[0]) {
+    var file = input.files[0];
+    if (file.size > 5 * 1024 * 1024) {
+      alert('파일 크기가 5MB를 초과합니다.');
+      input.value = '';
+      wrap.style.display = 'none';
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      img.src = e.target.result;
+      wrap.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  } else {
+    wrap.style.display = 'none';
+  }
+}
 function submitCheck() {
   var title    = document.getElementById('title').value.trim();
   var category = document.getElementById('category').value;

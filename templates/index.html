@@ -22,6 +22,7 @@
     <thead>
       <tr>
         <th class="col-no">번호</th>
+        <th style="width:54px;">사진</th>
         <th class="col-cat">분류</th>
         <th class="col-title">상품명</th>
         <th class="col-price">가격(골드)</th>
@@ -35,6 +36,14 @@
       {% for item in items %}
       <tr>
         <td class="col-no">{{ item['id'] }}</td>
+        <td style="text-align:center;padding:3px;">
+          {% if item['image'] %}
+            <img src="/static/uploads/{{ item['image'] }}"
+                 style="width:46px;height:46px;object-fit:cover;border:1px solid #c8d4e8;border-radius:2px;">
+          {% else %}
+            <div style="width:46px;height:46px;background:#e8edf5;border:1px solid #c8d4e8;border-radius:2px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;">📦</div>
+          {% endif %}
+        </td>
         <td class="col-cat">
           {% set cat = item['category'] %}
           {% if cat == '무기' %}<span class="badge badge-weapon">⚔️ 무기</span>

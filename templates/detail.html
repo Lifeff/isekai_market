@@ -36,6 +36,13 @@
     <div class="price-value">{{ "{:,}".format(item['price']) }} 골드 (G)</div>
   </div>
 
+  {% if item['image'] %}
+  <div style="padding:12px;border-bottom:1px solid #e0e8f4;text-align:center;background:#f8faff;">
+    <img src="/static/uploads/{{ item['image'] }}"
+         style="max-width:100%;max-height:400px;object-fit:contain;border:1px solid #c8d4e8;">
+  </div>
+  {% endif %}
+
   <div class="detail-body">
     {{ item['description'] }}
   </div>

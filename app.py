@@ -1,5 +1,6 @@
 from flask import Flask, request, redirect, session, render_template
-import sqlite3
+from werkzeug.utils import secure_filename
+import sqlite3, os, uuid
 from datetime import datetime
 
 app = Flask(__name__)
@@ -8,26 +9,34 @@ app.secret_key = 'isekai_secret_key_2024'
 ADMIN_ID = 'admin'
 ADMIN_PW = 'admin1234'
 
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 # ─── DB 연결 ───────────────────────────────────────
 def get_db():
     conn = sqlite3.connect('market.db')
     conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    return conn, cursor
+    return conn, conn.cursor()
 
 # ─── DB 초기화 ─────────────────────────────────────
 def init_db():
     conn, cursor = get_db()
     cursor.execute('''CREATE TABLE IF NOT EXISTS items (
-        id       INTEGER PRIMARY KEY AUTOINCREMENT,
-        title    TEXT,
-        category TEXT,
-        price    INTEGER,
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
+        title       TEXT,
+        category    TEXT,
+        price       INTEGER,
         description TEXT,
-        seller   TEXT,
-        status   TEXT DEFAULT '판매중',
-        views    INTEGER DEFAULT 0,
-        date     TEXT
+        seller      TEXT,
+        status      TEXT DEFAULT '판매중',
+        views       INTEGER DEFAULT 0,
+        date        TEXT,
+        image       TEXT DEFAULT NULL
     )''')
     cursor.execute('''CREATE TABLE IF NOT EXISTS users (
         id       INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,19 +45,44 @@ def init_db():
         nickname TEXT,
         date     TEXT
     )''')
+    # 기존 DB에 image 컬럼 없으면 추가
+    try:
+        cursor.execute('ALTER TABLE items ADD COLUMN image TEXT DEFAULT NULL')
+    except:
+        pass
     conn.commit()
     conn.close()
 
 init_db()
 
+# ─── 이미지 유효성 검사 ─────────────────────────────
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def save_image(file):
+    if not file or file.filename == '':
+        return None
+    if not allowed_file(file.filename):
+        return None
+    ext = file.filename.rsplit('.', 1)[1].lower()
+    filename = f"{uuid.uuid4().hex}.{ext}"
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    return filename
+
+def delete_image(filename):
+    if filename:
+        path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        if os.path.exists(path):
+            os.remove(path)
+
 # ─── 메인 목록 (Read - 전체) ────────────────────────
 @app.route('/')
 def index():
     conn, cursor = get_db()
-    keyword = request.args.get('keyword', '')
+    keyword  = request.args.get('keyword', '')
     category = request.args.get('category', '')
 
-    query = 'SELECT * FROM items WHERE 1=1'
+    query  = 'SELECT * FROM items WHERE 1=1'
     params = []
     if keyword:
         query += ' AND (title LIKE ? OR description LIKE ? OR seller LIKE ?)'
@@ -60,13 +94,10 @@ def index():
 
     cursor.execute(query, params)
     items = cursor.fetchall()
-
     cursor.execute('SELECT COUNT(*) FROM items')
     total = cursor.fetchone()[0]
-
     cursor.execute('SELECT COUNT(*) FROM items WHERE status="판매중"')
     on_sale = cursor.fetchone()[0]
-
     conn.close()
     return render_template('index.html',
         items=items, total=total, on_sale=on_sale,
@@ -76,8 +107,12 @@ def index():
 @app.route('/detail/<int:id>/')
 def detail(id):
     conn, cursor = get_db()
-    cursor.execute('UPDATE items SET views = views + 1 WHERE id = ?', (id,))
-    conn.commit()
+    # 세션 기반 조회수 중복 방지
+    viewed_key = f'viewed_{id}'
+    if not session.get(viewed_key):
+        cursor.execute('UPDATE items SET views = views + 1 WHERE id = ?', (id,))
+        conn.commit()
+        session[viewed_key] = True
     cursor.execute('SELECT * FROM items WHERE id = ?', (id,))
     item = cursor.fetchone()
     conn.close()
@@ -91,6 +126,7 @@ def detail(id):
 def create():
     if not session.get('user') and not session.get('is_admin'):
         return redirect('/login/')
+    error = ''
     if request.method == 'POST':
         title    = request.form['title']
         category = request.form['category']
@@ -98,15 +134,23 @@ def create():
         desc     = request.form['description']
         seller   = session.get('user', 'admin')
         date     = datetime.now().strftime('%Y-%m-%d')
+
+        image_file = request.files.get('image')
+        if image_file and image_file.filename != '':
+            if not allowed_file(image_file.filename):
+                error = '허용되지 않는 파일 형식입니다. (jpg, jpeg, png, gif, webp만 가능)'
+                return render_template('create.html', error=error)
+        filename = save_image(image_file)
+
         conn, cursor = get_db()
         cursor.execute(
-            'INSERT INTO items (title,category,price,description,seller,date) VALUES (?,?,?,?,?,?)',
-            (title, category, price, desc, seller, date)
+            'INSERT INTO items (title,category,price,description,seller,date,image) VALUES (?,?,?,?,?,?,?)',
+            (title, category, price, desc, seller, date, filename)
         )
         conn.commit()
         conn.close()
         return redirect('/')
-    return render_template('create.html')
+    return render_template('create.html', error=error)
 
 # ─── 수정 (Update) ──────────────────────────────────
 @app.route('/update/<int:id>/', methods=['GET', 'POST'])
@@ -120,21 +164,39 @@ def update(id):
     if not session.get('is_admin') and session.get('user') != item['seller']:
         conn.close()
         return redirect(f'/detail/{id}/')
+    error = ''
     if request.method == 'POST':
         title    = request.form['title']
         category = request.form['category']
         price    = request.form['price']
         desc     = request.form['description']
         status   = request.form['status']
+
+        image_file  = request.files.get('image')
+        old_image   = item['image']
+        new_filename = old_image  # 기본: 기존 이미지 유지
+
+        # 이미지 삭제 체크박스
+        if request.form.get('delete_image'):
+            delete_image(old_image)
+            new_filename = None
+        elif image_file and image_file.filename != '':
+            if not allowed_file(image_file.filename):
+                error = '허용되지 않는 파일 형식입니다. (jpg, jpeg, png, gif, webp만 가능)'
+                conn.close()
+                return render_template('update.html', item=item, error=error)
+            delete_image(old_image)
+            new_filename = save_image(image_file)
+
         cursor.execute(
-            'UPDATE items SET title=?,category=?,price=?,description=?,status=? WHERE id=?',
-            (title, category, price, desc, status, id)
+            'UPDATE items SET title=?,category=?,price=?,description=?,status=?,image=? WHERE id=?',
+            (title, category, price, desc, status, new_filename, id)
         )
         conn.commit()
         conn.close()
         return redirect(f'/detail/{id}/')
     conn.close()
-    return render_template('update.html', item=item)
+    return render_template('update.html', item=item, error=error)
 
 # ─── 삭제 (Delete) ──────────────────────────────────
 @app.route('/delete/<int:id>/')
@@ -144,6 +206,7 @@ def delete(id):
     item = cursor.fetchone()
     if item:
         if session.get('is_admin') or session.get('user') == item['seller']:
+            delete_image(item['image'])
             cursor.execute('DELETE FROM items WHERE id = ?', (id,))
             conn.commit()
     conn.close()

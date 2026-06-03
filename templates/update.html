@@ -7,7 +7,7 @@
     <span>✏️ 상품 수정</span>
   </div>
 
-  <form method="post" id="updateForm">
+  <form method="post" enctype="multipart/form-data" id="updateForm">
     <div class="form-wrap">
       <div class="form-row">
         <label>아이템명 *</label>
@@ -35,6 +35,29 @@
         </select>
       </div>
       <div class="form-row">
+        <label>상품 사진</label>
+        <div style="flex:1;">
+          {% if item['image'] %}
+          <div style="margin-bottom:6px;">
+            <img src="/static/uploads/{{ item['image'] }}"
+                 style="max-width:160px;max-height:160px;object-fit:contain;border:1px solid #c8d4e8;">
+            <div style="margin-top:4px;">
+              <label style="font-size:12px;color:#cc2200;font-weight:normal;width:auto;">
+                <input type="checkbox" name="delete_image" value="1"> 현재 사진 삭제
+              </label>
+            </div>
+          </div>
+          {% endif %}
+          <input type="file" name="image" id="imageInput" accept=".jpg,.jpeg,.png,.gif,.webp"
+                 style="border:1px solid #b0c4de;padding:4px;font-size:12px;width:100%;"
+                 onchange="previewImage(this)">
+          <div style="font-size:11px;color:#778;margin-top:3px;">새 사진으로 교체하려면 파일 선택 (jpg, jpeg, png, gif, webp / 최대 5MB)</div>
+          <div id="preview-wrap" style="display:none;margin-top:6px;">
+            <img id="preview-img" style="max-width:200px;max-height:200px;object-fit:contain;border:1px solid #c8d4e8;">
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
         <label>상품 설명 *</label>
         <textarea name="description" id="description">{{ item['description'] }}</textarea>
       </div>
@@ -48,6 +71,27 @@
 </div>
 
 <script>
+function previewImage(input) {
+  var wrap = document.getElementById('preview-wrap');
+  var img  = document.getElementById('preview-img');
+  if (input.files && input.files[0]) {
+    var file = input.files[0];
+    if (file.size > 5 * 1024 * 1024) {
+      alert('파일 크기가 5MB를 초과합니다.');
+      input.value = '';
+      wrap.style.display = 'none';
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      img.src = e.target.result;
+      wrap.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  } else {
+    wrap.style.display = 'none';
+  }
+}
 function submitCheck() {
   var title = document.getElementById('title').value.trim();
   var desc  = document.getElementById('description').value.trim();
