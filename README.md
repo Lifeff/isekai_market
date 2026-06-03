@@ -1,7 +1,7 @@
 # ⚔️ 이세계 용사 마켓 (Isekai Hero Market)
 
 > **"당신의 모험을 완성할 최강의 장비, 여기서 거래하세요."**  
-> 이세계 세계관을 배경으로 한 아이템 거래 웹 서비스입니다.
+> 이세계 아포칼립스 세계관을 배경으로 한 아이템 거래 웹 서비스입니다.
 
 [![Python](https://img.shields.io/badge/Python-3.x-blue?style=flat-square&logo=python)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-Framework-lightgrey?style=flat-square&logo=flask)](https://flask.palletsprojects.com/)
