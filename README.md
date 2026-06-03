@@ -1,66 +1,119 @@
 # ⚔️ 이세계 용사 마켓 (Isekai Hero Market)
 
-> **"당신의 모험을 완성할 최강의 장비, 여기서 거래하세요."**  
-> 이세계 아포칼립스 세계관을 배경으로 한 아이템 거래 웹 서비스입니다.
+> 아포칼립스 이후 최대 아이템 거래소 — 던전에서 얻은 아이템을 사고 파는 이세계판 쇼핑몰
 
-[![Python](https://img.shields.io/badge/Python-3.x-blue?style=flat-square&logo=python)](https://www.python.org/)
-[![Flask](https://img.shields.io/badge/Flask-Framework-lightgrey?style=flat-square&logo=flask)](https://flask.palletsprojects.com/)
-[![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?style=flat-square&logo=sqlite)](https://www.sqlite.org/)
+🌐 **배포 주소:** https://youngwoojeon03.pythonanywhere.com  
+📁 **GitHub:** https://github.com/Lifeff/isekai_market
 
 ---
 
-## 🌐 바로가기
-- **배포 주소:** [https://youngwoojeon03.pythonanywhere.com](https://youngwoojeon03.pythonanywhere.com)
-- **주요 타겟:** 던전 파밍 후 아이템 처분이 곤란한 용사 및 모험가
+## 📌 프로젝트 소개
+
+이세계 아포칼립스 세계관을 배경으로 한 아이템 거래 웹 서비스입니다.  
+용사들이 던전에서 획득한 무기, 방어구, 포션, 마법서 등을 자유롭게 사고팔 수 있는 커뮤니티형 쇼핑몰로,  
+Python Flask와 SQLite를 기반으로 제작하였으며 PythonAnywhere를 통해 실제 배포되어 운영됩니다.
 
 ---
 
-## ✨ 주요 기능
+## 🛠️ 기술 스택
 
-### 1. 맞춤형 거래 시스템 (CRUD)
-- **아이템 등록:** 상세 설명, 카테고리(무기/방어구/포션 등), 가격 설정
-- **동적 검색:** 제목, 설명, 판매자 닉네임을 아우르는 통합 검색 시스템
-- **조회수 및 상태 관리:** 실시간 인기 있는 물건 확인 및 판매완료 처리 기능
-
-### 2. 보안 및 권한 관리
-- **세션 기반 로그인:** 사용자별 고유 닉네임을 활용한 판매자 인증
-- **작성자 보호:** 본인이 등록한 아이템만 수정 및 삭제 가능
-
-### 3. 사이트 관리자(Admin) 기능
-- **통합 대시보드:** 전체 아이템 현황 및 가입 용사 수 실시간 집계
-- **질서 유지:** 부적절한 매물 강제 삭제 및 불량 유저 영구 제명 기능
+| 구분 | 기술 |
+|------|------|
+| Backend | Python Flask |
+| Database | SQLite |
+| Frontend | HTML5, CSS3, Jinja2 Template |
+| Deployment | GitHub + PythonAnywhere |
 
 ---
 
-## 🛠 기술 스택
-- **Language:** Python 3
-- **Web Framework:** Flask
-- **Database:** SQLite3
-- **Frontend:** HTML5, CSS3 (Custom Blue Theme), Jinja2
-- **Deployment:** PythonAnywhere, Git/GitHub
+## ✅ 주요 기능
+
+### 👤 회원 기능
+- 회원가입 / 로그인 / 로그아웃 (세션 기반)
+- 닉네임을 판매자명으로 사용
+
+### 🛒 CRUD 기능
+- **등록 (Create):** 아이템명, 카테고리, 가격(골드), 설명, 사진 입력
+- **목록 조회 (Read):** 전체 아이템 최신순 표시 + 썸네일
+- **상세 조회 (Read):** 상품 상세 정보, 이미지, 조회수 자동 증가 (세션 기반 중복 방지)
+- **수정 (Update):** 본인 등록 아이템만 수정 가능, 판매완료 처리
+- **삭제 (Delete):** 본인 등록 아이템만 삭제 가능, 이미지 파일 자동 삭제
+
+### 🖼️ 이미지 업로드
+- 상품 등록·수정 시 사진 첨부 가능
+- 허용 형식: `jpg`, `jpeg`, `png`, `gif`, `webp` / 최대 **5MB**
+- 등록 전 미리보기 지원
+- 목록 페이지 썸네일 표시, 상세 페이지 원본 이미지 표시
+- 수정 페이지에서 기존 사진 삭제 가능
+
+### 🔍 검색 및 필터
+- 아이템명 + 설명 + 판매자명 통합 키워드 검색
+- 카테고리별 필터 (무기 / 방어구 / 포션 / 마법서 / 기타)
+
+### ⚙️ 관리자 기능
+- 전체 아이템 수정 및 강제 삭제
+- 전체 회원 목록 조회 및 삭제
+- 통계 현황 (총 아이템 수 / 판매중 수 / 가입 회원 수)
+- 관리자 계정: `admin` / `admin1234`
 
 ---
 
-## 🗄 데이터베이스 구조
+## 🗄️ DB 구조
 
-### `items` Table (아이템 정보)
-| 컬럼명 | 타입 | 설명 |
-| :--- | :--- | :--- |
-| `id` | INTEGER | 고유 번호 (PK) |
-| `title` | TEXT | 아이템 명칭 |
-| `category` | TEXT | 분류 (무기/방어구/포션 등) |
-| `status` | TEXT | 판매 상태 (판매중/판매완료) |
+**`market.db` (SQLite)**
 
-### `users` Table (회원 정보)
-| 컬럼명 | 타입 | 설명 |
-| :--- | :--- | :--- |
-| `username` | TEXT | 로그인 ID (Unique) |
-| `nickname` | TEXT | 서비스 활동명 |
-| `date` | TEXT | 가입 일자 |
+### items 테이블
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| id | INTEGER PK | 아이템 고유번호 (자동증가) |
+| title | TEXT | 아이템명 |
+| category | TEXT | 분류 (무기/방어구/포션/마법서/기타) |
+| price | INTEGER | 가격 (골드) |
+| description | TEXT | 상품 설명 |
+| seller | TEXT | 판매자 닉네임 |
+| status | TEXT | 판매 상태 (판매중/판매완료) |
+| views | INTEGER | 조회수 (기본값 0) |
+| date | TEXT | 등록일 |
+| image | TEXT | 업로드된 이미지 파일명 (없을 경우 NULL) |
+
+### users 테이블
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| id | INTEGER PK | 회원 고유번호 (자동증가) |
+| username | TEXT UNIQUE | 로그인 아이디 |
+| password | TEXT | 비밀번호 |
+| nickname | TEXT | 닉네임 (판매자명으로 표시) |
+| date | TEXT | 가입일 |
 
 ---
 
-## 📝 개발 회고
-- **성취:** Flask와 SQLite를 연동하여 실제 서비스가 가능한 웹 애플리케이션의 전체 흐름을 구현함.
-- **성장:** GitHub를 통한 형상 관리 및 PythonAnywhere 배포 과정을 거치며 실무적인 개발 환경 적응력을 키움.
-- **향후 계획:** 비밀번호 암호화(Werkzeug) 적용 및 RESTful API 구조로의 고도화 예정.
+## 🚀 로컬 실행 방법
+
+```bash
+# 1. 의존성 설치
+pip install flask
+
+# 2. 실행 (app.py 하단 주석 해제 후)
+python app.py
+
+# 3. 브라우저 접속
+http://127.0.0.1:5000
+```
+
+---
+
+## 💬 느낀 점
+
+Flask와 SQLite를 처음 다루면서 CRUD의 전체 흐름을 직접 구현해보는 과정이 생각보다 어려웠습니다.  
+특히 로그인 세션 처리와 관리자/일반 유저 권한을 분리하는 부분에서 많이 고민했지만, 완성했을 때 뿌듯함이 컸습니다.  
+GitHub와 PythonAnywhere를 연동해 실제로 인터넷에 배포하는 경험을 통해 웹 서비스의 전체 흐름을 이해하게 되었습니다.  
+평소에 관심 있던 이세계 아포칼립스 설정을 주제로 잡아서 개발하는 내내 재미있게 진행할 수 있었습니다.
+
+---
+
+## ⚠️ 알려진 한계 및 개선 예정 사항
+
+- 비밀번호 평문 저장 → 추후 해싱 함수 적용 예정
+- 관리자 계정 하드코딩 → 환경변수 분리 예정
+- 유저 삭제 시 작성 아이템 연동 삭제 미적용 → 외래키 제약 조건 추가 예정
+- 페이지네이션 미구현 → 추후 적용 예정
